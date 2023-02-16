@@ -13,6 +13,7 @@ const listVisibleSubmission = async (
 
     const response = await prisma.submission.findMany({
       where: { hidden: false },
+      orderBy: { createdAt: 'desc' },
       skip: offset ? Number(offset) : 0,
       take: 10
     })

@@ -7,7 +7,7 @@ import { toast } from 'react-hot-toast'
 import VisibleList from '@/components/visibleList'
 import HiddenList from '@/components/hiddenList'
 import clsx from 'clsx'
-
+import queryClient from '@/lib/query'
 export default function Home() {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false)
   const [insertedData, setInsertedData] = useState<Submission>()
@@ -22,6 +22,7 @@ export default function Home() {
         if (data) {
           res(data)
           setInsertedData(data)
+          await queryClient.invalidateQueries(['visible-submissions'])
           setIsModalVisible(true)
         } else {
           rej('Unknown error')
@@ -44,19 +45,29 @@ export default function Home() {
         <title>Dashboard | Typeform Handler</title>
         <meta name="description" content="Manage your submissions" />
       </Head>
-      <div className="flex self-stretch">
+      <button className={clsx('my-4', button)} onClick={handler}>
+        Insert Form Response
+      </button>
+      <div className="flex justify-between gap-4">
         <VisibleList />
         <HiddenList />
       </div>
-      <button className={clsx('absolute', button)} onClick={handler}>
-        Insert Form Response
-      </button>
+
       <Modal
         isOpen={isModalVisible}
         setIsOpen={setIsModalVisible}
         dismiss={() => setInsertedData(undefined)}
       >
-        <div>{JSON.stringify(insertedData)}</div>
+        <div>
+          <p className="mb-4 font-inter text-xl font-bold">
+            Inserted Dummy Response
+          </p>
+          <p className="text-md font-inter font-bold">
+            {insertedData?.projectName}
+          </p>
+          <p className="text-gray-500">{insertedData?.fullName}</p>
+          <p className="text-gray-500">{insertedData?.email}</p>
+        </div>
       </Modal>
     </>
   )

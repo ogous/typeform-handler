@@ -1,3 +1,4 @@
+import { button } from '@/theme'
 import type { Submission } from '@prisma/client'
 import { useInfiniteQuery } from '@tanstack/react-query'
 import Loader from './loader'
@@ -27,9 +28,9 @@ export default function VisibleList() {
   const {
     data,
     error,
-    // fetchNextPage,
+    fetchNextPage,
     // hasNextPage,
-    // isFetchingNextPage,
+    isFetchingNextPage,
     status
   } = useInfiniteQuery<Submission[]>(['visible-submissions'], fetchVisibles, {
     getNextPageParam: (_, pages) => {
@@ -56,11 +57,22 @@ export default function VisibleList() {
   }
 
   return (
-    <div>
+    <div className="w-[300px]">
       <h3 className="font-bold">Visible Submissions</h3>
       {submissions?.map((i) => (
         <SumbissionItem key={i.id} item={i} />
       ))}
+      {submissions.length < 10 ? null : isFetchingNextPage ? (
+        <Loader />
+      ) : (
+        <button
+          disabled={isFetchingNextPage}
+          className={button}
+          onClick={() => fetchNextPage()}
+        >
+          Fetch Next Page
+        </button>
+      )}
     </div>
   )
 }

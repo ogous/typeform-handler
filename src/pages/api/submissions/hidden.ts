@@ -14,6 +14,7 @@ const listHiddenSubmission = async (
     const response = await prisma.submission.findMany({
       where: { hidden: true },
       skip: offset ? Number(offset) : 0,
+      orderBy: { createdAt: 'desc' },
       take: 10
     })
 
